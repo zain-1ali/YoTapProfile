@@ -1,7 +1,7 @@
 import { Box, Modal } from "@mui/material";
 import React, { useState } from "react";
 import { MdKeyboardArrowUp, MdKeyboardArrowDown } from "react-icons/md";
-import { push, ref, update } from "firebase/database";
+import { push, ref, serverTimestamp, update } from "firebase/database";
 import { getDownloadURL, uploadBytes, ref as sRef } from "firebase/storage";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
@@ -13,6 +13,7 @@ const LeadformModal = ({
   userdata,
   crntUsrAnalytics,
   handleConfirmModal,
+  downloadVcf,
 }) => {
   let screenWidth = screen.width;
   const style2 = {
@@ -44,7 +45,7 @@ const LeadformModal = ({
     name: "",
     email: "",
     phone: "",
-    title: "",
+    job: "",
     company: "",
   });
 
@@ -90,12 +91,14 @@ const LeadformModal = ({
 
   // Format the date string
   const formattedDate = `${month} ${day},${year}`;
+  console.log(crntUsrAnalytics?.id);
 
   const addData = async () => {
     if (data.name && data.email && data.phone) {
       let pushKey = push(ref(db, `Contacts/`), {
         ...data,
         userid: userdata?.id,
+        date: serverTimestamp(),
         // date: formattedDate,
       }).key;
       update(ref(db, `Contacts/${pushKey}`), {
@@ -113,7 +116,7 @@ const LeadformModal = ({
           name: "",
           email: "",
           phone: "",
-          title: "",
+          job: "",
           company: "",
         });
         handleConfirmModal();
@@ -175,7 +178,7 @@ const LeadformModal = ({
                 fontWeight: "600",
               }}
             >
-              <span className="mr-[5px] text-[#3B57EE]">Exchange </span>
+              <span className="mr-[5px] text-[#3B57EE]">Exchange</span>
               Info with {userdata?.firstName}
             </div>
 
@@ -272,17 +275,17 @@ const LeadformModal = ({
                         fontWeight: "300",
                         fontSize: "16px",
                       }}
-                    >
+                    >g
                       Title
                     </p> */}
                     <input
                       type="text"
-                      placeholder="Enter TItle"
+                      placeholder="Enter Title"
                       class="outline-none p-2 w-[100%]  border rounded-lg h-[57px] mt-[2px]"
                       onChange={(e) =>
-                        setData({ ...data, title: e.target.value })
+                        setData({ ...data, job: e.target.value })
                       }
-                      value={data.title}
+                      value={data.job}
                     />
                   </div>
                 </div>

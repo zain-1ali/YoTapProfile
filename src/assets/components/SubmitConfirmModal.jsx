@@ -8,6 +8,7 @@ const ConfirmModal = ({
   handleConfirmModal,
   userdata,
   prflImg,
+  downloadVcf,
 }) => {
   let screenWidth = screen.width;
   const style2 = {
@@ -59,7 +60,10 @@ const ConfirmModal = ({
                   fontFamily: "Inter",
                 }}
               >
-                {returnSlicedString(userdata?.name, 30)}
+                {returnSlicedString(
+                  userdata?.firstName + " " + userdata?.lastName,
+                  30
+                )}
               </h2>
             </div>
 
@@ -86,13 +90,14 @@ const ConfirmModal = ({
 
             <div className="w-[100%] flex justify-center items-center mt-5">
               <div
-                className="w-[165px] h-[53px] rounded-[20px] bg-black flex justify-center items-center text-white"
+                className="w-[165px] h-[53px] rounded-[20px] bg-black flex justify-center items-center text-white cursor-pointer"
                 style={{
                   fontFamily: "Inter",
                 }}
+                onClick={() => downloadVcf()}
               >
-                <AiOutlineCheck className="text-[white] text-2xl mr-[2px]" />
-                Contact Saved!
+                {/* <AiOutlineCheck className="text-[white] text-2xl mr-[2px]" /> */}
+                Save Contact
               </div>
             </div>
             <div className="w-[100%] flex justify-center items-center mt-5">
@@ -103,7 +108,7 @@ const ConfirmModal = ({
                 }}
                 onClick={() => handleConfirmModal()}
               >
-                Next
+                Done
               </h2>
             </div>
           </div>

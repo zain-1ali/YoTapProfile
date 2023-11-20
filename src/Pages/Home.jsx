@@ -399,16 +399,28 @@ const Home = () => {
   }, [profileurl]);
 
   // Download Vcf file
-  let checkHttp = (url, id) => {
-    if (id === 7 || id === 4 || id === 19 || id === 12 || id === 8) {
-      if (url?.includes("https://")) {
+  let checkHttp = (url, id, value) => {
+    if (id === 4) {
+      return `sms:${value}`;
+    } else if (id === 2 || id === 1) {
+      return `tel:${value}`;
+    } else if (id === 3) {
+      return `mailto:${value}`;
+    } else {
+      if (url?.includes("https://") || url?.includes("http://")) {
         return url;
       } else {
         return `https://${url}`;
       }
-    } else {
-      return url;
     }
+
+    // else {
+    //   if (id === 4) {
+
+    //   } else {
+    //     return url;
+    //   }
+    // }
   };
 
   console.log(userdata);
@@ -433,27 +445,31 @@ const Home = () => {
       .addAddress("", "", userdata?.address);
 
     sociallink?.map((elm) => {
-      if (elm?.linkID != 3 && elm?.linkID != 1 && elm?.linkID != 2) {
+      if (
+        // elm?.linkID != 3 &&
+        elm?.linkID != 1 &&
+        elm?.linkID != 4 &&
+        elm?.linkID != 2 &&
+        elm?.linkID != 3 &&
+        elm?.shareable === true
+      ) {
         myVCard.addSocial(
-          checkHttp(elm?.baseUrl + elm?.value, elm?.linkID),
+          checkHttp(elm?.baseUrl + elm?.value, elm?.linkID, elm?.value),
           elm?.name
         );
       }
-      if (elm?.linkID === 2) {
+      if (elm?.linkID === 2 && elm?.value != userdata?.phone) {
         myVCard.addPhoneNumber(elm?.value);
       }
-      if (elm?.linkID === 3) {
+      if (elm?.linkID === 3 && elm?.value != userdata?.email) {
         myVCard.addEmail(elm?.value);
       }
 
-      if (elm?.linkID === 1) {
-        myVCard.addEmail(elm?.email).addPhoneNumber(elm?.value);
-      }
+      // if (elm?.linkID === 1) {
+      //   myVCard.addPhoneNumber(elm?.value);
+      // }
       if (elm?.linkID === 21) {
-        myVCard.addURL(
-          // elm?.value
-          "https://www.fb.com"
-        );
+        myVCard.addURL(elm?.value);
       }
       // checkHttp(elm?.baseUrl + elm?.value, elm?.linkID)
     });
@@ -527,6 +543,7 @@ const Home = () => {
                 prflImg={
                   profileurl ? profileurl : `https://placehold.co/116x116`
                 }
+                downloadVcf={downloadVcf}
               />
 
               <div
@@ -551,6 +568,7 @@ const Home = () => {
                       src={coverurl}
                       // alt="background"
                       className="h-[210px] w-[90%] mt-[15px] rounded-2xl "
+                      loading="lazy"
                     />
                   ) : (
                     <div className="h-[210px] w-[90%] mt-[15px] rounded-2xl border"></div>
@@ -562,12 +580,14 @@ const Home = () => {
                         src={logourl ? logourl : logoPlchldr}
                         alt="logo"
                         className="absolute bottom-[15px] right-[-7px] h-[55px] w-[55px] rounded-full border-[1px] border-white"
+                        loading="lazy"
                       />
                       {profileurl ? (
                         <img
                           src={profileurl}
                           alt="profile"
                           className="h-[150px] w-[150px] rounded-full border-[5px] border-white"
+                          loading="lazy"
                         />
                       ) : (
                         <div className="h-[150px] w-[150px] rounded-full border-[5px] border-white"></div>
@@ -694,7 +714,8 @@ const Home = () => {
                               target="_blank"
                               href={checkHttp(
                                 elm?.baseUrl + elm?.value,
-                                elm?.linkID
+                                elm?.linkID,
+                                elm?.value
                               )}
                               // onClick={() => linkAnalytics(elm?.title)}
                             >
@@ -713,14 +734,15 @@ const Home = () => {
                                       src={returnIcons(elm?.linkID)}
                                       alt=""
                                       className="h-[75px] w-[75px]"
+                                      loading="lazy"
                                     />
                                   </div>
 
-                                  <div className="w-[60%] flex flex-col justify-center  ">
+                                  <div className="w-[63%] flex flex-col justify-center ">
                                     <h2 className="font-[700] text-[18px] ">
-                                      {elm?.name?.length < 17
-                                        ? elm?.name
-                                        : elm?.name?.substring(0, 16) + "..."}
+                                      {elm?.title?.length < 22
+                                        ? elm?.title
+                                        : elm?.title?.substring(0, 22) + "..."}
                                     </h2>
                                     <p className="font-[400] text-[13px] w-[90%] ">
                                       {elm?.feature?.length < 67
@@ -748,7 +770,8 @@ const Home = () => {
                                 elm?.linkID != null &&
                                 checkHttp(
                                   elm?.baseUrl + elm?.value,
-                                  elm?.linkID
+                                  elm?.linkID,
+                                  elm?.value
                                 )
                               }
                               // returnSocialUrl(elm?.title, elm?.value)
@@ -769,8 +792,11 @@ const Home = () => {
                                   // style={elm?.name==='Calendly'? {borderRadius:'10px'}:null}
                                 />
                               )}
-                              <h2 class="font-[300] text-[12px] text-[#000000] mt-[6px]">
-                                {elm?.name}
+                              <h2 class="font-[300] text-[12px] text-[#000000] mt-[6px] text-center">
+                                {/* {elm?.title} */}
+                                {elm?.title?.length < 19
+                                  ? elm?.title
+                                  : elm?.title?.substring(0, 19) + "..."}
                               </h2>
                             </a>
                           </>
@@ -797,9 +823,12 @@ const Home = () => {
               </div>
             </div>
           ) : (
-            window.open(
-              returnSocialUrl(userdata?.direct?.name, userdata?.direct?.value)
-            )
+            (window.location.href = checkHttp(
+              userdata?.direct?.baseUrl + userdata?.direct?.value,
+              userdata?.direct?.linkID,
+              userdata?.direct?.value
+            ))
+            // returnSocialUrl(userdata?.direct?.name, userdata?.direct?.value)
           )}
         </>
       )}

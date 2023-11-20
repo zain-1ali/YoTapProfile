@@ -38,7 +38,7 @@ import paypal from "./socialLink/paypal.png";
 
 // import payment icons
 
-import website from "./socialLink/web.png";
+import website from "./socialLink/link.png";
 import venmo from "./socialLink/venmo.png";
 // import custom from "./socialLink/customlink.png";
 
